@@ -94,6 +94,8 @@ We thank ICGC and TCGA projects for making cancer genomics data available for an
 
 ## LICENSE
 
+Copyright \copy&; 2020 Xue-Song Liu, Jing Zhang, Shixiang Wang
+
 Code and documents of this work are made available for non commercial research purposes only under __Apache License v2__ license, more detail please see [description of license](LICENSE). The code/idea currently may not be used for commercial purposes without explicit written permission after contacting Xue-Song Liu <liuxs@shanghaitech.edu.cn>.
 
 ***
