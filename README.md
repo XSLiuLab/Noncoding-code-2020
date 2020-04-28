@@ -1,10 +1,17 @@
 # Noncoding Project Materials and Code
 
-This repository contains materials (small datasets can be kept in GitHub) and code for reproducing analyses in noncoding project. For details of project or experimental procedures, please read corresponding manuscript.
+This repository contains materials and code for reproducing some analyses in noncoding project. For details of project or experimental procedures, please read corresponding manuscript.
 
 ## Code
 
+The following code are implemented by Jing Zhang and some of them are (re-)implemented by Shixiang Wang.
 
+- From ICGC mutation data to logistical modeling - [Script 1](pipeline/main.R) - [Script 2](pipeline/2020-p-value-repeat.R) - [Script 3](pipeline/2020-p-value-repeat-02.R) -
+- From logistical results to final gene list - [Script 1](pipeline/2020-p-value-repeat-03.R) - [Script 2](pipeline/2020-p-value-plotting.R)
+- TFBS motif midpoint extraction - [Script](others/TFBS.R)
+- Correlation between mutation rate and (epi)genetic features in 1Mb region - [Script 1](pipeline/new_analysis.R) - [Script 2](pipeline/new_analysis2.R)
+- Expression correlation between CDC20 and TFBS - [Script](gene_expr_and_association.R)
+- ELK4 Chip-Seq signals around CDC promoter region in HELA/HEK293 cell lines [Script](others/plot_coverage.R) 
 
 ## Citation
 
