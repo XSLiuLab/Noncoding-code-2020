@@ -1,4 +1,4 @@
-# Noncoding Project Materials and Code
+# Noncoding (CDC20) Project Materials and Code
 
 This repository contains materials and code for reproducing some analyses in noncoding project. For details of project or experimental procedures, please read corresponding manuscript.
 
