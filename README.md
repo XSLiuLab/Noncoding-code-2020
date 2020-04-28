@@ -13,6 +13,8 @@ The following code are implemented by Jing Zhang and some of them are (re-)imple
 - Expression correlation between CDC20 and TFBS - [Script](gene_expr_and_association.R)
 - ELK4 Chip-Seq signals around CDC promoter region in HELA/HEK293 cell lines - [Script](others/plot_coverage.R) 
 
+Related old repos: [CDC20](https://github.com/XSLiuLab/CDC20), [noncoding](https://github.com/zhangjing1589/noncoding).
+
 ## Citation
 
 If you use data, results or conclusion from this work, please cite:
