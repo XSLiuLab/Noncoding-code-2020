@@ -1,0 +1,33 @@
+Genomic region,Correlation coefficient,P value,Genetic feature
+noncoding,-0.363171096358217,3.41773732652429e-80,CpG island
+noncoding,-0.468602014513428,4.92809960679813e-158,GC content
+noncoding,-0.295006958223937,3.31615826927353e-59,Conservation
+noncoding,-0.754738136890291,0,Replication time
+noncoding,-0.342314150969621,2.33147351945115e-80,DNA poly II
+noncoding,0.290884490461723,1.40392688443451e-57,Mappability
+noncoding,-0.0998928008940189,0.00000012225520453651,Recombination rate
+noncoding,-0.575813900419203,2.58484389211936e-254,TFBS
+coding,0.636227283289658,1.31381968766799e-288,CpG island
+coding,0.84464912708338,0,GC content
+coding,0.778440694084086,0,Conservation
+coding,0.794393025615104,0,Replication time
+coding,0.6881269346646,0,DNA poly II
+coding,0.830006499252052,0,Mappability
+coding,0.630045381986291,9.22908162592375e-309,Recombination rate
+coding,0.774342265785875,0,TFBS
+promoter,0.678033881882587,0,CpG island
+promoter,0.883556146076318,0,GC content
+promoter,0.818591140742848,0,Conservation
+promoter,0.848999773564981,0,Replication time
+promoter,0.747700118039579,0,DNA poly II
+promoter,0.881783238951809,0,Mappability
+promoter,0.67778444123031,0,Recombination rate
+promoter,0.825615979943949,0,TFBS
+Noncoding-promoter,-0.387140142803846,8.83365898813758e-92,CpG island
+Noncoding-promoter,-0.277414257509139,2.51909278338023e-52,GC content
+Noncoding-promoter,-0.231640884383089,1.47838421701843e-36,Conservation
+Noncoding-promoter,-0.75024146255412,0,Replication time
+Noncoding-promoter,-0.338025235325368,2.7880216457986e-78,DNA poly II
+Noncoding-promoter,0.366084732288579,1.5202430205455e-92,Mappability
+Noncoding-promoter,-0.0766374254643608,0.0000502739848227498,Recombination rate
+Noncoding-promoter,-0.577387044224693,5.1410681884206e-256,TFBS
