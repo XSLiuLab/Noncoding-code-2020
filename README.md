@@ -10,7 +10,7 @@ The following code are implemented by Jing Zhang and some of them are (re-)imple
 - From logistical results to final gene list - [Script 1](pipeline/2020-p-value-repeat-03.R) - [Script 2](pipeline/2020-p-value-plotting.R)
 - TFBS motif midpoint extraction - [Script](others/TFBS.R)
 - Correlation between mutation rate and (epi)genetic features in 1Mb region - [Script 1](pipeline/new_analysis.R) - [Script 2](pipeline/new_analysis2.R)
-- Expression correlation between CDC20 and TFBS - [Script](gene_expr_and_association.R)
+- Expression correlation between CDC20 and TFBS - [Script](others/gene_expr_and_association.R)
 - ELK4 Chip-Seq signals around CDC20 promoter region in HELA/HEK293 cell lines - [Script](others/plot_coverage.R) 
 
 Related old repos: [CDC20](https://github.com/XSLiuLab/CDC20), [noncoding](https://github.com/zhangjing1589/noncoding).
