@@ -1,9 +1,16 @@
 library(dplyr)
 
+# loc = dplyr::tibble(
+#   chrom = "chr1",
+#   start = 43824626 - 3000 - 1,
+#   end = 43824626 + 3000
+# )
+
+## Use mutaiton motif as center
 loc = dplyr::tibble(
   chrom = "chr1",
-  start = 43824626 - 3000 - 1,
-  end = 43824626 + 3000
+  start = 43824527 - 500,
+  end = 43824527 + 500
 )
 
 # Signal from ENCODE------------------------------------------------------------------
@@ -26,6 +33,8 @@ library(ggplot2)
 library(ggforce)
 
 start_point = 43824626
+motif_start = 43824524
+motif_end = 43824529
 
 dat = rbind(
   HEK293_CDC20[, c("start", "score")],
@@ -34,13 +43,21 @@ dat = rbind(
 )
 dat = unique(dat)
 
-ggplot(dat, aes(x=start, y=score)) + 
+p1 <- ggplot(dat, aes(x=start, y=score)) + 
   geom_area() +
-  # xlim(start_point - 100, start_point + 10) +
   geom_vline(xintercept = start_point, color = "green") + 
-  facet_zoom(xlim = c(start_point - 150, start_point + 100)) +
+  annotate("rect", xmin = motif_start, xmax = motif_end, ymin = 0, ymax = 15, alpha = .3, fill = "red") + 
   cowplot::theme_cowplot() + 
-  labs(x = "Genome coordinates of chr1", y = "Chip-Seq signal score in HEK293 cell line")
+  labs(x = NULL, y = "Signal in HEK293 cell line")
+
+## Add zoom in
+# ggplot(dat, aes(x=start, y=score)) + 
+#   geom_area() +
+#   # xlim(start_point - 100, start_point + 10) +
+#   geom_vline(xintercept = start_point, color = "green") + 
+#   facet_zoom(xlim = c(start_point - 150, start_point + 100)) +
+#   cowplot::theme_cowplot() + 
+#   labs(x = "Genome coordinates of chr1", y = "Chip-Seq signal score in HEK293 cell line")
 
 # dat[order(start)][start > start_point + 120]
 
@@ -51,13 +68,26 @@ dat2 = rbind(
 )
 dat2 = unique(dat2)
 
-ggplot(dat2, aes(x=start, y=score)) + 
+p2 <- ggplot(dat2, aes(x=start, y=score)) +
   geom_area() +
-  # xlim(start_point - 100, start_point + 10) +
-  geom_vline(xintercept = start_point, color = "green") + 
-  facet_zoom(xlim = c(start_point - 150, start_point + 100)) +
-  cowplot::theme_cowplot() + 
-  labs(x = "Genome coordinates of chr1", y = "Chip-Seq signal score in HELA cell line")
+  geom_vline(xintercept = start_point, color = "green") +
+  annotate("rect", xmin = motif_start, xmax = motif_end, ymin = 0, ymax = 8.4, alpha = .3, fill = "red") + 
+  cowplot::theme_cowplot() +
+  labs(x = "Genome coordinates of chr1", y = "Signal score in HELA cell line")
+
+library(patchwork)
+p = p1 / p2
+
+ggsave(filename = "ELK4_coverage.pdf", plot = p, width = 6, height = 4)
+
+## Add zoom in
+# ggplot(dat2, aes(x=start, y=score)) +
+#   geom_area() +
+#   # xlim(start_point - 100, start_point + 10) +
+#   geom_vline(xintercept = start_point, color = "green") +
+#   facet_zoom(xlim = c(start_point - 150, start_point + 100)) +
+#   cowplot::theme_cowplot() +
+#   labs(x = "Genome coordinates of chr1", y = "Chip-Seq signal score in HELA cell line")
 
 # Read coverage -----------------------------------------------------------
 
