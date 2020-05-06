@@ -210,5 +210,11 @@ prob_region_final = prob_region_final[order(count, decreasing = TRUE)]
 colnames(prob_region_final)[3:4] = c("start", "end")
 
 save(prob_region_final, file = "RegionMutationList.RData")
-openxlsx::write.xlsx(prob_region_final, file = "RegionMutationList.xlsx")
+load(file = "RegionMutationList.RData")
+
+prob_region_final = prob_region_final[gene_name != "BCL2"]
+prob_region_final[, p_value := -log10(p_val)][, p_value := ifelse(p_value > 15, 15, p_value)]
+prob_region_final[, pos := paste0(chr, ":", start, "-", end)]
+
+openxlsx::write.xlsx(prob_region_final[, list(pos, gene_name, count, p_value)], file = "RegionMutationList.xlsx")
 
