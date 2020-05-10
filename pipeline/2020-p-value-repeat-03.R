@@ -1,13 +1,13 @@
 ## Calculate p values for mutations and regions (freq>5)
 
-# Get the mutation frequency
-system(
-  "cat pred*.tsv.gz | grep -v donor | grep -v mock | cut -f2,3 | sort | uniq -c | sort -n | gzip > final_mutation_freq.tsv.gz"
-)
-
-system(
-  "cat pred*.tsv.gz | grep -v donor | grep -v mock | gzip > final_mutation.tsv.gz"
-)
+# # Get the mutation frequency
+# system(
+#   "cat pred*.tsv.gz | grep -v donor | grep -v mock | cut -f2,3 | sort | uniq -c | sort -n | gzip > final_mutation_freq.tsv.gz"
+# )
+# 
+# system(
+#   "cat pred*.tsv.gz | grep -v donor | grep -v mock | gzip > final_mutation.tsv.gz"
+# )
 
 library(data.table)
 
@@ -89,28 +89,9 @@ nrow(final_dt)
 nrow(unique(final_dt))
 
 final_dt = unique(final_dt)
-## Get mutation-specific prob
-## prob x >= K (K is the mutation freq, so here minus 1)
-## ppoibin is used to get Pr(x<K)
-final_dt2 <- unique(final_dt[, .(donor, prob, mut_index)])
-prob_point <- final_dt2[, .(p_val = 1 - poibin::ppoibin(length(donor) - 1, prob),
-                           donor_list = paste(unique(donor), collapse = ",")),
-                     by = .(mut_index)]
-prob_point
-prob_point$mut_index[duplicated(prob_point$mut_index)]
-
-## Set 0 to minimal p value
-prob_point[, p_val := ifelse(p_val < .Machine$double.xmin, 
-                             .Machine$double.xmin,
-                             p_val)]
-
-length(unique(final_dt$mut_index))
-length(unique(final_dt$region_midpoint))
-
-prob_point = prob_point[order(p_val)]
 
 ## Get region prob
-
+## CumSum(Pi) ~ 1-CumProd(1-Pi)
 prob_region = final_dt[, .(prob = mean(prob) * width), 
          by = .(donor, region_range)][,
            .(p_val = 1 - poibin::ppoibin(.N - 1, prob),
@@ -170,27 +151,6 @@ gene_df[, `:=`(
   start = ifelse(strand == "+", gene_start - 5000, gene_end + 1), 
   end   = ifelse(strand == "+", gene_start - 1, gene_end + 5000)
   )]
-
-prob_point = tidyr::separate(prob_point, col = "mut_index", into = c("chr", "start"), sep = ":")
-prob_point = as.data.table(prob_point)
-prob_point[, end := start]
-prob_point[, `:=`(start = as.integer(start), end = as.integer(end))]
-
-setkey(gene_df, chr, start, end)
-
-prob_point_final <- foverlaps(
-  prob_point,
-  gene_df,
-  type = "within"
-)
-
-prob_point_final = prob_point_final[!is.na(gene_name)][, .(gene_name, chr, i.start, p_val, donor_list)][order(p_val)]
-prob_point_final$count = stringr::str_count(prob_point_final$donor_list, ",") + 1
-prob_point_final = prob_point_final[order(count, decreasing = TRUE)]
-colnames(prob_point_final)[3] = "mut_position"
-
-save(prob_point_final, file = "PointMutationList.RData")
-writexl::write_xlsx(prob_point_final, path = "PointMutationList.xlsx")
 
 prob_region = tidyr::separate(prob_region, col = "region_range", into = c("chr", "start", "end"))
 prob_region = as.data.table(prob_region)
