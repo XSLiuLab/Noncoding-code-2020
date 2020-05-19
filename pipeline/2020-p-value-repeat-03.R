@@ -92,6 +92,8 @@ final_dt = unique(final_dt)
 
 ## Get region prob
 ## CumSum(Pi) ~ 1-CumProd(1-Pi)
+
+## Todo: prob should be probs in all samples (including non-mutated samples)
 prob_region = final_dt[, .(prob = mean(prob) * width), 
          by = .(donor, region_range)][,
            .(p_val = 1 - poibin::ppoibin(.N - 1, prob),
@@ -99,6 +101,8 @@ prob_region = final_dt[, .(prob = mean(prob) * width),
              count = .N),
            by = region_range
          ]
+
+# barplot(dbinom(0:1000, 1000, 0.001), xlim = c(0, 10))
 
 ### Method based on point prob 
 # region_df <- merge(unique(final_dt[, .(region_range, mut_index, donor)]),
