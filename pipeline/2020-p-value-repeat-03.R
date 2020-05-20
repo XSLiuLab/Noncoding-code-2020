@@ -82,8 +82,8 @@ donor_freq[, weight := freq / sum(freq)]
 
 final_dt <- merge(final_dt, donor_freq, by = "donor", all.x = TRUE)
 final_dt[, prob := prob * weight]
-any(is.na(final_dt$prob))
-final_dt[, c("freq", "weight") := NULL]
+# any(is.na(final_dt$prob))
+# final_dt[, c("freq", "weight") := NULL]
 
 nrow(final_dt)
 nrow(unique(final_dt))
@@ -93,16 +93,46 @@ final_dt = unique(final_dt)
 ## Get region prob
 ## CumSum(Pi) ~ 1-CumProd(1-Pi)
 
-## Todo: prob should be probs in all samples (including non-mutated samples)
-prob_region = final_dt[, .(prob = mean(prob) * width), 
-         by = .(donor, region_range)][,
-           .(p_val = 1 - poibin::ppoibin(.N - 1, prob),
-             donor_list = paste(unique(donor), collapse = ","),
-             count = .N),
-           by = region_range
-         ]
+# prob_region = final_dt[, .(prob = mean(prob) * width), 
+#          by = .(donor, region_range)][,
+#            .(p_val = 1 - poibin::ppoibin(.N - 1, prob),
+#              donor_list = paste(unique(donor), collapse = ","),
+#              count = .N),
+#            by = region_range
+#          ]
 
-# barplot(dbinom(0:1000, 1000, 0.001), xlim = c(0, 10))
+region_list = unique(final_dt$region_range)
+all_patients = donor_freq$donor
+
+names(region_list) = region_list
+
+future::plan("multiprocess")
+prob_region = furrr::future_map_dfr(region_list, function(region) {
+  
+  dt = final_dt[region_range == region]
+  width = dt$width[1]
+  dt = dt[, .(prob, donor)]
+  
+  count = nrow(dt)
+  mut_donors = unique(dt$donor)
+  null_donors = setdiff(all_patients, mut_donors)
+  
+  dt = rbind(dt,
+        data.table::data.table(
+          prob = as.numeric(names(table(dt$prob)[1])),
+          donor = null_donors
+        ), fill = TRUE)
+  
+  dt = merge(dt, donor_freq, by = "donor", all.x = TRUE)
+  dt[, prob := prob * weight]
+  dt[, .(prob = mean(prob) * width), by = donor]
+  
+  data.table::data.table(
+    p_val = 1 - poibin::ppoibin(count - 1, dt$prob),
+    donor_list = paste(unique(mut_donors), collapse = ","),
+    count = count
+  )
+}, .id = "region_range", .progress = TRUE)
 
 ### Method based on point prob 
 # region_df <- merge(unique(final_dt[, .(region_range, mut_index, donor)]),
@@ -125,7 +155,7 @@ prob_region[, p_val := ifelse(p_val < .Machine$double.xmin,
                              .Machine$double.xmin,
                              p_val)]
 prob_region = prob_region[order(p_val)]
-prob_region
+prob_region[, adj_p_val := p.adjust(p_val, method = "bonferroni")]
 
 
 ## Annotate records
@@ -156,6 +186,8 @@ gene_df[, `:=`(
   end   = ifelse(strand == "+", gene_start - 1, gene_end + 5000)
   )]
 
+data.table::setkey(gene_df, chr, start, end)
+
 prob_region = tidyr::separate(prob_region, col = "region_range", into = c("chr", "start", "end"))
 prob_region = as.data.table(prob_region)
 prob_region$start = as.integer(prob_region$start)
@@ -168,17 +200,15 @@ prob_region_final <- foverlaps(
 )
 
 prob_region_final = prob_region_final[!is.na(gene_name)][
-  , .(gene_name, chr, i.start, i.end, p_val, donor_list, count)][
-    order(p_val)]
-prob_region_final = prob_region_final[order(count, decreasing = TRUE)]
+  , .(gene_name, chr, i.start, i.end, p_val, adj_p_val, donor_list, count)][
+    order(adj_p_val)]
+prob_region_final = prob_region_final[order(count, decreasing = TRUE)][gene_name != "BCL2"]
 colnames(prob_region_final)[3:4] = c("start", "end")
 
 save(prob_region_final, file = "RegionMutationList.RData")
 load(file = "RegionMutationList.RData")
 
-prob_region_final = prob_region_final[gene_name != "BCL2"]
-prob_region_final[, p_value := -log10(p_val)]#[, p_value := ifelse(p_value > 15, 15, p_value)]
 prob_region_final[, pos := paste0(chr, ":", start, "-", end)]
 
-openxlsx::write.xlsx(prob_region_final[, list(pos, gene_name, count, p_value)], file = "RegionMutationList.xlsx")
+openxlsx::write.xlsx(prob_region_final[, list(pos, gene_name, count, p_val, adj_p_val)], file = "RegionMutationList.xlsx")
 
