@@ -355,18 +355,25 @@ cor_genetic_df$features = factor(cor_genetic_df$features,
                                    "CpG island", "DNA poly II",
                                    "Conservation", 
                                    "Recombination rate"))
+
+## Remove "Noncoding-promoter"
+load("pipeline/cor_genetic_df.RData")
+
 library(ggplot2)
 library(cowplot)
 library(RColorBrewer)
 
-ggplot(cor_genetic_df[features != "TFBS"],
+ggplot(cor_genetic_df[features != "TFBS"][region != "nonpromoter"],
        aes(x = features, y = coeff, fill=region)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_fill_brewer(palette = "Paired", 
                     labels = c("Coding", "Noncoding", 
-                               "Noncoding-promoter", "Promoter")) +
+                               "Promoter")) +
   labs(x = "Genetic features", y = "Correlation coefficient", fill = "Region") +
+  cowplot::theme_cowplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) -> p_genetic
+
+p_genetic
 
 save_plot("Genetic_corrplot_rm_TFBS.pdf", plot = p_genetic, base_aspect_ratio = 1.6)  
 
